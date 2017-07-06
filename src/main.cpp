@@ -4,6 +4,7 @@
 // The logServer example shows how to configure the central logging nodes
 //************************************************************
 #include <painlessMesh.h>
+#include "sequence.h"
 
 #define MESH_PREFIX "whateverYouLike"
 #define MESH_PASSWORD "somethingSneaky"
@@ -14,6 +15,7 @@ void receivedCallback(uint32_t from, String &msg);
 void newConnectionCallback(size_t nodeId);
 void dropConnectionCallback(size_t nodeId);
 void serialLoop();
+void wipeEEPROM();
 
 painlessMesh mesh;
 String serialString;
@@ -24,10 +26,13 @@ void setup()
 {
     pinMode(LED, OUTPUT);
     Serial.begin(115200);
+    Serial.println();
+    Serial.println("[INIT] client");
+    // wipeEEPROM();
 
-    // mesh.setDebugMsgTypes(ERROR | STARTUP | CONNECTION); // set before init() so that you can see startup messages
+    mesh.setDebugMsgTypes(ERROR | STARTUP | CONNECTION); // set before init() so that you can see startup messages
 
-    mesh.init(MESH_PREFIX, MESH_PASSWORD, MESH_PORT, STA_AP, AUTH_WPA2_PSK, 6);
+    mesh.init(MESH_PREFIX, MESH_PASSWORD, MESH_PORT, STA_AP, AUTH_OPEN, 2);
     mesh.onReceive(&receivedCallback);
     mesh.onNewConnection(&newConnectionCallback);
     mesh.onDroppedConnection(&dropConnectionCallback);
@@ -51,7 +56,7 @@ void dropConnectionCallback(size_t nodeId)
 
 void receivedCallback(uint32_t from, String &msg)
 {
-    Serial.printf("logClient: Received from %u msg=%s\n", from, msg.c_str());
+    Serial.printf("%u logClient: Received from %u msg=%s\n", millis(), from, msg.c_str());
 
     // Saving logServer
     DynamicJsonBuffer jsonBuffer;
@@ -82,10 +87,8 @@ void serialLoop()
         serialString += inChar;
 
         if (inChar == '\n')
-        {                         // truncate and parse Json
-            if (logServerId == 0) // If we don't know the logServer yet
-                mesh.sendBroadcast(serialString);
-            else
+        {                        // truncate and parse Json
+            if (logServerId > 0) // If we don't know the logServer yet
                 mesh.sendSingle(logServerId, serialString);
 
             serialString = "";
