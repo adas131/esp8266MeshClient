@@ -1,11 +1,30 @@
+#ifndef _SEQUENCE_H_
+#define _SEQUENCE_H_
+
 enum
 {
-    OFF,
-    ON,
+    NONE,
+    ALL,
     UPPER,
     LOWER,
     LEFT,
     RIGHT
 };
 
-const unsigned long sequenceCSV[] = {0, 1, 3, 6, 9, 10, 255, 1000, 2, 4, 7, 10, 11, 254, 2000, 3, 5, 8, 11, 12, 253, 5000, 4, 6, 9, 12, 13, 252, 0000, 5, 7, 10, 13, 14, 251, 600000, 6, 8, 11, 14, 15, 200};
+enum
+{
+    OFF,
+    ON,
+    FLASH_50MS,
+    FLASH_100MS,
+    FADE_IN,
+    FADE_OUT,
+    FADE_INOUT,
+    FADE_OUTIN
+};
+
+const unsigned long sequenceCSV[] = {0, ALL, LOWER, FADE_INOUT, 9, 10, 255, 1000, UPPER, LEFT, FADE_OUTIN, 10, 11, 254, 2000, LOWER, RIGHT, 8, 11, 12, 253, 5000, LEFT, FADE_INOUT, 9, 12, 13, 252, 0000, FADE_OUT, FADE_OUTIN, 10, 13, 14, 251, 600000, FADE_INOUT, 8, 11, 14, 15, 200};
+const unsigned long animationCSV[] = {0, OFF, ON, FADE_OUT, FLASH_50MS, FLASH_50MS, 5, 1000, FADE_OUT, OFF, FADE_OUT, FADE_OUT, FLASH_50MS, 2, 2000, FLASH_50MS, FADE_INOUT, FLASH_50MS, FADE_OUT, 0, 2, 5000, FADE_OUT, FADE_OUT, OFF, FADE_OUT, FLASH_100MS, 2, 10000, FADE_OUT, FLASH_100MS, FADE_OUT, FADE_OUT, FLASH_100MS, 0, 600000, FLASH_50MS, ON, FLASH_100MS, FLASH_100MS, ON, 5};
+const unsigned long handCSV[] = {
+    0, OFF, 1000, ON, 2000, FLASH_50MS, 5000, OFF, 65535};
+#endif

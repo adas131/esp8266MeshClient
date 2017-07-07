@@ -3,79 +3,61 @@
 // setup a node that logs to a central logging node
 // The logServer example shows how to configure the central logging nodes
 //************************************************************
-#include <painlessMesh.h>
+#include "lmf/def.h"
+#include "lmf/const.h"
 #include "sequence.h"
+#include "mesh.h"
+#include "body.h"
 
-#define MESH_PREFIX "whateverYouLike"
-#define MESH_PASSWORD "somethingSneaky"
-#define MESH_PORT 5555
-#define LED D4
+int test[] = {
+    0, 1, 2, 3, 65535, -1};
+unsigned int test2 = 166;
+Body::Body(int pin, int *sequence)
+{
+    pinMode(pin, OUTPUT);
+    _pin = pin;
+    _sequence = sequence;
+}
 
-void receivedCallback(uint32_t from, String &msg);
-void newConnectionCallback(size_t nodeId);
-void dropConnectionCallback(size_t nodeId);
+void Body::run()
+{
+    if ((millis() - startTime) < *(_sequence + seqPtr))
+    {
+        return;
+    }
+
+    seqPtr++;
+    // Serial.printf("%d [RUN] pin:%d sequence:%d\n", millis() _pin, *(_sequence + i));
+
+    // do
+    // {
+    //     Serial.printf("%d [RUN] pin:%d sequence:%d\n", millis() _pin, *(_sequence + i));
+    // } while (*(++i + _sequence) != -1);
+}
+
+Body hand(0, &test[0]);
 void serialLoop();
-void wipeEEPROM();
-
-painlessMesh mesh;
-String serialString;
-
-size_t logServerId = 0;
 
 void setup()
 {
+    wdt_disable();
     pinMode(LED, OUTPUT);
     Serial.begin(115200);
     Serial.println();
     Serial.println("[INIT] client");
-    // wipeEEPROM();
-
-    mesh.setDebugMsgTypes(ERROR | STARTUP | CONNECTION); // set before init() so that you can see startup messages
-
-    mesh.init(MESH_PREFIX, MESH_PASSWORD, MESH_PORT, STA_AP, AUTH_OPEN, 2);
-    mesh.onReceive(&receivedCallback);
-    mesh.onNewConnection(&newConnectionCallback);
-    mesh.onDroppedConnection(&dropConnectionCallback);
+    meshInit();
+    wdt_enable(2000);
+    ESP.wdtFeed();
 }
 
 void loop()
 {
+    ESP.wdtFeed();
     mesh.update();
     serialLoop();
-}
-
-void newConnectionCallback(size_t nodeId)
-{
-    Serial.printf("Connection establish %u\n", nodeId);
-}
-
-void dropConnectionCallback(size_t nodeId)
-{
-    Serial.printf("Connection break %u\n", nodeId);
-}
-
-void receivedCallback(uint32_t from, String &msg)
-{
-    Serial.printf("%u logClient: Received from %u msg=%s\n", millis(), from, msg.c_str());
-
-    // Saving logServer
-    DynamicJsonBuffer jsonBuffer;
-    JsonObject &root = jsonBuffer.parseObject(msg);
-    if (root.containsKey("topic"))
+    if (f_started)
     {
-        if (String("logServer").equals(root["topic"].as<String>()))
-        {
-            // check for on: true or false
-            if (!logServerId && root["nodeId"])
-            {
-                Serial.println("node server found");
-                digitalWrite(LED, true);
-            }
-
-            logServerId = root["nodeId"];
-            // Serial.printf("logServer detected!!!\n");
-        }
-        // Serial.printf("Handled from %u msg=%s\n", from, msg.c_str());
+        hand.run();
     }
 }
 
