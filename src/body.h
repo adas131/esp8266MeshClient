@@ -4,12 +4,13 @@
 class Body
 {
 public:
-  Body(int pin, int *sequence);
+  Body(int pin, long *sequence);
   void run();
 
 private:
   int _pin;
-  int *_sequence;
+  long *_sequence;
+  long _seqPtr;
 };
 
 #endif

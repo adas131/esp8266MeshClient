@@ -6,6 +6,5 @@ painlessMesh mesh;
 String serialString;
 unsigned long startTime;
 bool f_started;
-unsigned int seqPtr;
 
 #endif

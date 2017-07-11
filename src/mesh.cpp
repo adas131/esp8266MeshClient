@@ -11,7 +11,7 @@ void dropConnectionCallback(size_t nodeId);
 
 void meshInit()
 {
-    mesh.setDebugMsgTypes(ERROR | STARTUP | CONNECTION); // set before init() so that you can see startup messages
+    mesh.setDebugMsgTypes(0); // set before init() so that you can see startup messages
 
     mesh.init(MESH_PREFIX, MESH_PASSWORD, MESH_PORT, STA_AP, AUTH_OPEN, 2);
     mesh.onReceive(&receivedCallback);
@@ -41,19 +41,23 @@ void receivedCallback(uint32_t from, String &msg)
         if (String("logServer").equals(root["topic"].as<String>()))
         {
             // check for on: true or false
-            if (!logServerId && root["nodeId"])
+            if (!logServerId)
             {
-                Serial.println("node server found");
-                digitalWrite(LED, true);
-                if (!f_started)
+                if (root["nodeId"])
                 {
-                    startTime = millis();
-                    f_started = true;
+                    Serial.println("node server found");
+                    digitalWrite(LED, true);
                 }
-            }
 
-            logServerId = root["nodeId"];
-            // Serial.printf("logServer detected!!!\n");
+                logServerId = root["nodeId"];
+                // Serial.printf("logServer detected!!!\n");
+            }
+            if (root["action"].as<String>() == "start")
+            {
+                Serial.println("f_started");
+                startTime = millis();
+                f_started = true;
+            }
         }
         // Serial.printf("Handled from %u msg=%s\n", from, msg.c_str());
     }

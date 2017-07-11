@@ -9,33 +9,7 @@
 #include "mesh.h"
 #include "body.h"
 
-int test[] = {
-    0, 1, 2, 3, 65535, -1};
-unsigned int test2 = 166;
-Body::Body(int pin, int *sequence)
-{
-    pinMode(pin, OUTPUT);
-    _pin = pin;
-    _sequence = sequence;
-}
-
-void Body::run()
-{
-    if ((millis() - startTime) < *(_sequence + seqPtr))
-    {
-        return;
-    }
-
-    seqPtr++;
-    // Serial.printf("%d [RUN] pin:%d sequence:%d\n", millis() _pin, *(_sequence + i));
-
-    // do
-    // {
-    //     Serial.printf("%d [RUN] pin:%d sequence:%d\n", millis() _pin, *(_sequence + i));
-    // } while (*(++i + _sequence) != -1);
-}
-
-Body hand(0, &test[0]);
+Body hand(0, handCSV);
 void serialLoop();
 
 void setup()
@@ -69,9 +43,11 @@ void serialLoop()
         serialString += inChar;
 
         if (inChar == '\n')
-        {                        // truncate and parse Json
-            if (logServerId > 0) // If we don't know the logServer yet
+        { // truncate and parse Json
+            if (logServerId > 0)
+            { // If we don't know the logServer yet
                 mesh.sendSingle(logServerId, serialString);
+            }
 
             serialString = "";
             break;
