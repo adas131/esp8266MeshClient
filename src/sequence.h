@@ -27,5 +27,7 @@ enum
 long handCSV[] = {
     0, OFF, 1000, ON, 2000, FLASH_50MS, 5000, OFF, -1, STOP};
 
-long headCSV[]  = {};
+long headCSV[]  = {
+    0, ON, 500, OFF, 1000, ON, 1500, OFF, -1, STOP };
+    
 #endif

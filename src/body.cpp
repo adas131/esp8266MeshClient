@@ -11,7 +11,8 @@ Body::Body(int pin, long *sequence)
 
 void Body::run()
 {
-    long *ptr = _sequence + _seqPtr;
+    long *ptr = _sequence + _seqPtr * 2;
+
     if(*ptr == -1) {
         return;
     }
@@ -20,7 +21,7 @@ void Body::run()
     //     return;
     // }
 
-    Serial.printf("%d [RUN] pin:%d *sequence:%d sequence:%d\n", millis(), _pin, *ptr, ptr);
+    Serial.printf("%d [RUN] pin:%d *sequence:%d\n", millis(), _pin, *(ptr + 1));
     _seqPtr ++;
 
     // do

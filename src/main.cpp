@@ -10,6 +10,8 @@
 #include "body.h"
 
 Body hand(0, handCSV);
+Body head(1, headCSV);
+
 void serialLoop();
 
 void setup()
